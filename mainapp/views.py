@@ -479,7 +479,7 @@ def dmodist(request):
             total_male  += ifnonezero(i.total_males)
             total_female += ifnonezero(i.total_females)
             total_infant += ifnonezero(i.total_infants)
-            if(i.medical_req.strip() != ""):total_medical+=1
+            if(i.medical_req and i.medical_req.strip() != ""):total_medical+=1
 
         d.append( { "district" : district[1] , "total_camp" : camps , "total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical   } )
     return render(request , "dmodist.html" , {"camps" : d }  )
