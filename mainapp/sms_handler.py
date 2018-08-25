@@ -6,10 +6,7 @@ SMS_USER = os.environ.get("SMS_USER")
 SMS_PASSWORD = os.environ.get("SMS_PASSWORD")
 
 
-def send_confirmation_sms(phone_number):
-    confirmation_message = (
-        "Your rescue request has been registered, we will follow up soon. Stay safe"
-    )
+def send_confirmation_sms(phone_number, confirmation_message):
     api_url = "{}?username={}&password={}&message={}&numbers={}&senderid=KSITMK".format(
         SMS_ENDPOINT,
         SMS_USER,

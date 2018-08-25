@@ -77,8 +77,11 @@ class CreateRequest(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
+        confirmation_message = (
+            "Your rescue request has been registered, we will follow up soon. Stay safe"
+        )
         sms_queue.enqueue(
-            send_confirmation_sms, self.object.requestee_phone
+            send_confirmation_sms, self.object.requestee_phone, confirmation_message
         )
         return HttpResponseRedirect(self.get_success_url())
 

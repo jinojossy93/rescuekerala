@@ -27,8 +27,11 @@ class FeedBackView(View):
             # check whether it's valid and send sms confirmation:
             if form.is_valid():
                 f = form.save()
+                confirmation_message = (
+                    "Your feedback has been received, we will follow up soon. Thanks for your valuable feedback."
+                )
                 sms_queue.enqueue(
-                    send_confirmation_sms, f.phone
+                    send_confirmation_sms, f.phone, confirmation_message
                 )
                 return HttpResponse(status=200)
             else:
