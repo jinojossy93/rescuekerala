@@ -1,18 +1,20 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
     Announcements , districts, RequestUpdate, PrivateRescueCamp, CsvBulkUpload
+from django.views.generic.base import TemplateView, View
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django import forms
+from django.core.mail import send_mail as django_send_mail
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
@@ -43,7 +45,27 @@ class CustomForm(forms.ModelForm):
 PER_PAGE = 100
 PAGE_LEFT = 5
 PAGE_RIGHT = 5
+
 PAGE_INTERMEDIATE = "50"
+
+class FeedbackView(View):
+    def post(self, request, *args, **kwargs):
+        pass
+
+    def send_mail(self, request, feedback, fail_silently=False):
+        message = _("Your site %(host)s received feedback from %(user)s.\n"
+                    "The comments were:\n"
+                    "%(note)s.\n\n"
+                    "See the full feedback content here: %(url)s") \
+                  % {'host': request.get_host(), 'user': str(request.user), 'note': feedback.comment,
+                     'url': request.build_absolute_uri(
+                         reverse('admin:tellme_feedback_change', args=(feedback.id,)))}
+        django_send_mail(
+            _('[%(host)s] Received feedback') % {'host': request.get_host()},
+            message,
+            settings.SERVER_EMAIL,
+            [settings.TELLME_FEEDBACK_EMAIL],
+            fail_silently=fail_silently)
 
 class CreateRequest(CreateView):
     model = Request
@@ -462,7 +484,7 @@ def dmodash(request):
         total_male  += ifnonezero(i.total_males)
         total_female += ifnonezero(i.total_females)
         total_infant += ifnonezero(i.total_infants)
-        if(i.medical_req.strip() != ""):total_medical+=1
+        if(i.medical_req and i.medical_req.strip() != ""):total_medical+=1
 
     return render(request , "dmodash.html",{"camp" :camps , "people" : total_people , "male" : total_male , "female" : total_female , "infant" : total_infant , "medicine" : total_medical})
 
@@ -547,6 +569,7 @@ def dmoinfo(request):
 
         data.append({ "district" : i[1], "req" : req  , "reqo" : reqo , "reqd" : reqd , "con" : con , "cons" : cons , "vol" : vol})
     return render(request ,"dmoinfo.html",{"data" : data} )
+
 def error(request):
     error_text = request.GET.get('error_text')
     return render(request , "mainapp/error.html", {"error_text" : error_text})

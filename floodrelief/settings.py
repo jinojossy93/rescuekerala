@@ -31,6 +31,9 @@ environ.Env.read_env(root('.env'))
 # False if not in os.environ
 DEBUG = env('DEBUG')
 
+# SERVER_EMAIL = "jinojossy93@gmail.com"
+# TELLME_FEEDBACK_EMAIL = "jinojossy93@gmail.com"
+
 # Raises django's ImproperlyConfigured exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
 
@@ -57,6 +60,9 @@ RAVEN_CONFIG = {
 # Application definition
 
 INSTALLED_APPS = [
+    'sslserver',
+    'autofixture',
+    'tellme',
     'mainapp.apps.MainappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -203,22 +209,21 @@ STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'static'),
 )
 bucket_name = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-S3_URL = "https://{}.s3.ap-south-1.amazonaws.com".format(bucket_name,)
+S3_URL = "https://{}.s3.ap-south-1.amazonaws.com".format(bucket_name, )
 
-
-if os.environ.get('USE_S3'):
-    AWS_STORAGE_BUCKET_NAME=bucket_name
-    AWS_ACCESS_KEY_ID=os.environ.get("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY=os.environ.get("AWS_SECRET_ACCESS_KEY")
-    AWS_QUERYSTRING_AUTH=False
-    MEDIA_URL = S3_URL + "/media/"
-    DEFAULT_FILE_STORAGE="storages.backends.s3boto3.S3Boto3Storage"
-else:
+if DEBUG:
     MEDIA_URL = '/media/'
-ADMIN_SITE_HEADER = "Keralarescue Dashboard"
+elif os.environ.get('USE_S3'):
+    AWS_STORAGE_BUCKET_NAME = bucket_name
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_QUERYSTRING_AUTH = False
+    MEDIA_URL = S3_URL + "/media/"
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
 MEDIA_ROOT = 'media'
 
-#JWT REST Auth for API
+# JWT REST Auth for API
 REST_USE_JWT = True
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=20)
@@ -236,3 +241,5 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
 }
+
+ADMIN_SITE_HEADER = "Keralarescue Dashboard"
