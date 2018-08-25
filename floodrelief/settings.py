@@ -31,9 +31,6 @@ environ.Env.read_env(root('.env'))
 # False if not in os.environ
 DEBUG = env('DEBUG')
 
-ADMIN_EMAIL = "jinojossy93@gmail.com"
-FEEDBACK_EMAIL = "jinojossy93@gmail.com"
-
 # Raises django's ImproperlyConfigured exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
 
