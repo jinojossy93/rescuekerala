@@ -7,18 +7,15 @@ from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
     Announcements , districts, RequestUpdate, PrivateRescueCamp, CsvBulkUpload
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import TemplateView
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django import forms
-from django.core.mail import send_mail as django_send_mail
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
-from django.contrib import admin
 from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count, QuerySet
 from django.core.cache import cache
@@ -48,24 +45,6 @@ PAGE_RIGHT = 5
 
 PAGE_INTERMEDIATE = "50"
 
-class FeedbackView(View):
-    def post(self, request, *args, **kwargs):
-        pass
-
-    def send_mail(self, request, feedback, fail_silently=False):
-        message = _("Your site %(host)s received feedback from %(user)s.\n"
-                    "The comments were:\n"
-                    "%(note)s.\n\n"
-                    "See the full feedback content here: %(url)s") \
-                  % {'host': request.get_host(), 'user': str(request.user), 'note': feedback.comment,
-                     'url': request.build_absolute_uri(
-                         reverse('admin:tellme_feedback_change', args=(feedback.id,)))}
-        django_send_mail(
-            _('[%(host)s] Received feedback') % {'host': request.get_host()},
-            message,
-            settings.SERVER_EMAIL,
-            [settings.TELLME_FEEDBACK_EMAIL],
-            fail_silently=fail_silently)
 
 class CreateRequest(CreateView):
     model = Request

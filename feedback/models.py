@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -15,13 +16,8 @@ class Feedback(models.Model):
     created = models.DateTimeField(_('Creation date'), auto_now_add=True)
 
 
-# Receive the post_delete signal and delete the file associated with the model instance.
-from django.db.models.signals import post_delete
-from django.dispatch.dispatcher import receiver
-
-
-@receiver(post_delete, sender=Feedback)
-def feedback_screenshot_delete(sender, instance, **kwargs):
-    # Pass false so FileField doesn't save the model.
-    if instance.screenshot:
-        instance.screenshot.delete(save=False)
+    def screenshot_thumb(self):
+        if self.screenshot:
+            return mark_safe(u'<img src="%s" width="%s" />' % (self.screenshot.url, "50%"))
+    screenshot_thumb.allow_tags = True
+    screenshot_thumb.short_description = _("Screenshot")

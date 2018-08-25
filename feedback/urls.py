@@ -1,10 +1,9 @@
-from django.urls import path
 from django.conf.urls import url
-from django.contrib.auth import views as auth_views
-from .views import post_feedback
-from django.views.generic import TemplateView
+from .views import FeedBackView
+
 
 app_name = 'feedback'
+
 urlpatterns = [
-    path('post_feedback/', post_feedback, name='post_feedback'),
+    url('post_feedback/', FeedBackView.as_view(), name='post_feedback'),
 ]
