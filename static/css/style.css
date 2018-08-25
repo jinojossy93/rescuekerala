@@ -318,6 +318,7 @@ table thead tr th {
     margin-right: auto;
     max-width: 1170px;
 }
+
 .vertical-right-aligned {
     transform: rotate(-90deg);
     transform-origin: 100% 100%;
