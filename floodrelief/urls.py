@@ -23,7 +23,7 @@ admin.site.site_header = settings.ADMIN_SITE_HEADER
 
 urlpatterns = [
     path('', include('mainapp.urls')),
-    path('tellme/', include("tellme.urls")),
+    path('fb/', include("feedback.urls")),
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view()),
     path('api/1/rest-auth/', include('rest_auth.urls')),

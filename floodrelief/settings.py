@@ -62,7 +62,7 @@ RAVEN_CONFIG = {
 INSTALLED_APPS = [
     'sslserver',
     'autofixture',
-    'tellme',
+    'feedback',
     'mainapp.apps.MainappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
