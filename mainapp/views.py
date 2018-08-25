@@ -103,8 +103,8 @@ def volunteerdata(request):
 
 class RegisterNGO(CreateView):
     model = NGO
-    fields = ['organisation', 'organisation_type','organisation_address', 'name', 'phone', 'description', 'area',
-              'location']
+    fields = ['organisation', 'organisation_type','organisation_address', 'name', 'phone', 'area',
+              'description','website_url','location']
     success_url = '/reg_success'
 
 
@@ -134,7 +134,7 @@ class RegisterPrivateReliefCampForm(forms.ModelForm):
         widgets = {
             'lsg_name': forms.Select(),
             'ward_name': forms.Select()
-        }     
+        }
 
 
 class RegisterPrivateReliefCamp(CreateView):
@@ -264,7 +264,7 @@ class RescueCampFilter(django_filters.FilterSet):
 def relief_camps(request):
     return render(request,"mainapp/relief_camps.html")
 
-  
+
 def missing_persons(request):
     return render(request, "mainapp/missing_persons.html")
 
@@ -322,7 +322,6 @@ class NGOFilter(django_filters.FilterSet):
     class Meta:
         model = NGO
         fields = {
-                    'district' : ['exact'],
                     'area' : ['icontains']
                  }
 
@@ -343,7 +342,6 @@ class ContribFilter(django_filters.FilterSet):
                     'status' : ['exact'],
                     'address' : ['icontains'],
                     'contrib_details' : ['icontains'],
-                    'status' : ['icontains'],
                  }
 
     def __init__(self, *args, **kwargs):
@@ -366,7 +364,7 @@ def contributors(request):
 
 
 def request_list(request):
-    filter = RequestFilter(request.GET, queryset=Request.objects.all() )
+    filter = RequestFilter(request.GET, queryset=Request.objects.exclude(status='sup') )
     req_data = filter.qs.order_by('-id')
     paginator = Paginator(req_data, PER_PAGE)
     page = request.GET.get('page')
@@ -661,6 +659,7 @@ class CampRequirementsForm(forms.ModelForm):
            'other_req': forms.Textarea(attrs={'rows':3}),
        }
 
+
 class CampRequirements(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     login_url = '/login/'
     model = RescueCamp
@@ -691,6 +690,7 @@ class CampDetailsForm(forms.ModelForm):
         'map_link',
         'latlng',
         ]
+
 
 class CampDetails(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     login_url = '/login/'
@@ -809,6 +809,7 @@ class CampRequirementsFilter(django_filters.FilterSet):
         super(CampRequirementsFilter, self).__init__(*args, **kwargs)
         if self.data == {}:
             self.queryset = self.queryset.none()
+
 
 class VolunteerConsent(UpdateView):
     model = Volunteer

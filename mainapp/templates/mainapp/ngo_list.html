@@ -67,6 +67,16 @@
 {% endblock %}
 
 {% block content %}
+
+<!--Navigation Breadcrumbs-->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="../ngo-volunteer/">Register as a Volunteer or NGO</a></li>
+    <li class="breadcrumb-item active" aria-current="page">View Registered NGOs/Companies</li>
+  </ol>
+</nav>
+
 <h1 class="text-center">List of NGOs</h1>
 {# <h2 class="text-center">ഇതു വരെ ആവശ്യപ്പെട്ടവ</h2> #}
 <form action="" method="get">
@@ -83,7 +93,7 @@
         <th>Organisation Address</th>
         <th>Name</th>
         <th>Phone‍</th>
-        <th>Description</th>
+        <th>Website</th>
         <th>Area</th>
         <th>Location</th>
         <th>Joined</th>
@@ -98,7 +108,7 @@
           <td>{{ req.organisation_address }}</td>
           <td>{{ req.name }}</td>
           <td>{{ req.phone }}</td>
-          <td>{{ req.description }}</td>
+          <td>{{ req.website_url }}</td>
           <td>{{ req.area }}</td>
           <td>{{ req.location }}</td>
           <td>{{ req.joined }}</td>

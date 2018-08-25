@@ -13,6 +13,7 @@ from django.db.models.signals import post_save
 from django.core.cache.utils import make_template_fragment_key
 from django.core.cache import cache
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 districts = (
@@ -131,7 +132,7 @@ class Request(models.Model):
     #  If it is enabled no need to consider lat and lng
     is_request_for_others = models.BooleanField(
         verbose_name='Requesting for others - മറ്റൊരാൾക്ക് വേണ്ടി അപേക്ഷിക്കുന്നു  ', default=False,
-        help_text="If it is enabled, no need to consider lat and lng")
+        help_text="If this is checked, enter other's location from the \'Enter location manually\' button at the bottom")
 
     needwater = models.BooleanField(verbose_name='Water - വെള്ളം')
     needfood = models.BooleanField(verbose_name='Food - ഭക്ഷണം')
@@ -182,6 +183,9 @@ class Request(models.Model):
 
     def __str__(self):
         return self.get_district_display() + ' ' + self.location
+
+    def is_old(self):
+        return self.dateadded < (timezone.now() - timezone.timedelta(days=2))
 
 
 class Volunteer(models.Model):
@@ -234,6 +238,7 @@ class NGO(models.Model):
         max_length=500,
         verbose_name="Preferred Location to Volunteer"
     )
+    website_url = models.CharField(max_length=300,verbose_name="Enter your website link",default='')
     is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
     joined = models.DateTimeField(auto_now_add=True)
 
@@ -323,6 +328,9 @@ class DistrictCollection(models.Model):
     class Meta:
         verbose_name = 'District: Collection'
         verbose_name_plural = 'District: Collections'
+
+    def __str__(self):
+        return self.get_district_display()
 
 
 class RescueCamp(models.Model):
