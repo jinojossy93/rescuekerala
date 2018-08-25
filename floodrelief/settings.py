@@ -217,6 +217,8 @@ elif os.environ.get('USE_S3'):
     AWS_QUERYSTRING_AUTH = False
     MEDIA_URL = S3_URL + "/media/"
     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+else:
+    MEDIA_URL = '/media/'
 
 MEDIA_ROOT = 'media'
 
