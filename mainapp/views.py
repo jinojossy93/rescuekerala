@@ -1046,10 +1046,19 @@ class CollectionCenterForm(forms.ModelForm):
         }
 
 
-class CollectionCenterView(CreateView):
+class CollectionCenterAddView(CreateView):
     model = CollectionCenter
     form_class = CollectionCenterForm
     success_url = '/collection_centers/'
+
+class CollectionCenterEditView(UpdateView):
+    model = CollectionCenter
+    form_class = CollectionCenterForm
+    template_name_suffix = '_edit'
+    success_url = '/consent_success/'
+
+    def get_object(self):
+        return self.model.objects.get(id=self.kwargs.get("id"))
 
 
 def announcement_api(request):

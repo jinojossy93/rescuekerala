@@ -274,10 +274,11 @@ class HospitalAdmin(admin.ModelAdmin):
 class CollectionCenterAdmin(admin.ModelAdmin):
     list_filter = ('district',)
     search_fields = ['name']
+    readonly_fields = ['id']
     actions = ['download_csv']
 
     def download_csv(self, request, queryset):
-        header_row = ('name' , 'address' , 'contacts', 'type_of_materials_collecting' , 'district' , 'lsg_type','lsg_name','ward_name','is_inside_kerala' , 'city','added_at','map_link')
+        header_row = ('id', 'name' , 'address' , 'contacts', 'type_of_materials_collecting' , 'district' , 'lsg_type','lsg_name','ward_name','is_inside_kerala' , 'city','added_at','map_link')
         body_rows = []
         collection_centers = queryset.all()
         for cc in collection_centers:

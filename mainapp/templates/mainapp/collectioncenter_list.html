@@ -34,7 +34,7 @@
     {% for center in filter.qs %}
         <tr valign="top">
               <td>{{ center.id }}</td>
-              <td>{{ center.name }}</td>
+              <td><a href="/collection_centre/{{ center.id }}/"> {{ center.name }}</a></td>
               <td>{{ center.address }}</td>
               <td>{{ center.contacts }}</td>
               <td>{{ center.type_of_materials_collecting }}</td>
