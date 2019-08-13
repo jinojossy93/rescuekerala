@@ -604,12 +604,25 @@ class RequestUpdate(models.Model):
         return self.get_status_display()
 
 
+class Item(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Item name - ഇനത്തിന്റെ പേര്")
+    sponsored_by = models.CharField(max_length=100, blank=False, null=False, verbose_name="Sponsor - സ്പോൺസർ ചെയ്തു")
+    remarks = models.TextField(verbose_name='Remarks - പരാമർശത്തെ', blank=True)
+    unit = models.CharField(max_length=100, blank=False, null=False, verbose_name="Unit - യൂണിറ്റ്")
+    rate = models.IntegerField(null=True,blank=True,verbose_name="Item price - ഇനത്തിന്റെ വില")
+    quantity = models.IntegerField(null=True,blank=True,verbose_name="Quantity - ഇനത്തിന്റെ വില")
+
+
 class CollectionCenter(models.Model):
 
     lsg_types = [
         (LSGTypes.CORPORATION.value, 'Corporation'),
         (LSGTypes.MUNICIPALITY.value, 'Municipality'),
         (LSGTypes.GRAMA_PANCHAYATH.value, 'Grama Panchayath')
+    ]
+
+    item_types = [
+        ('----------------', ''),
     ]
 
     name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Name - പേര്")
