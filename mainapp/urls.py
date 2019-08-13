@@ -27,6 +27,8 @@ urlpatterns = [
     path('district_needs/', views.DistNeeds.as_view(), name='distneedsview'),
     path('collection_center/', views.CollectionCenterAddView.as_view(), name='collection_centers_add_view'),
     path('collection_centre/<int:id>/', views.CollectionCenterEditView.as_view(), name='collection_centres_edit_view'),
+    path('collection_centre/<int:id>/item_in/', views.CollectionCenterEditView.as_view(), name='collection_centres_item_in_view'),
+    path('collection_centre/<int:id>/item_out/', views.CollectionCenterEditView.as_view(), name='collection_centres_item_out_view'),
     url(r'collection_centers/(?P<location>\w+)/$', views.CollectionCenterListView.as_view(), name='collection_centers_list'),
     path('collection_centers/', TemplateView.as_view(template_name='mainapp/collectioncenter_state_select.html'), name='collection_centers_district_select'),
     path('contribute/', views.contribute, name='contribute'),

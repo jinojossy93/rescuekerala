@@ -1045,6 +1045,10 @@ class CollectionCenterForm(forms.ModelForm):
             'ward_name': forms.Select(),
         }
 
+class ItemInForm(forms.ModelForm):
+    class Meta:
+        model = CollectionCenter
+        fields = ['items']
 
 class CollectionCenterAddView(CreateView):
     model = CollectionCenter
@@ -1059,6 +1063,28 @@ class CollectionCenterEditView(UpdateView):
 
     def get_object(self):
         return self.model.objects.get(id=self.kwargs.get("id"))
+
+
+
+class CollectionCenterItemInView(UpdateView):
+    model = CollectionCenter
+    form_class = ItemInForm
+    template_name_suffix = '_item_in'
+    success_url = '/consent_success/'
+
+    def get_object(self):
+        return self.model.objects.get(id=self.kwargs.get("id"))
+
+class CollectionCenterItemOutView(UpdateView):
+    model = CollectionCenter
+    form_class = CollectionCenterForm
+    template_name_suffix = '_item_out'
+    success_url = '/consent_success/'
+
+    def get_object(self):
+        return self.model.objects.get(id=self.kwargs.get("id"))
+
+
 
 
 def announcement_api(request):

@@ -30,7 +30,7 @@
             <th>Address <span><input class="search" id="search-address" type="text" name="search-address" /></span></th>
             <th>Contacts <span><input class="search" id="search-contact" type="text" name="search-contact" /></span></th>
             <th>Materials Collecting <span><input class="search" id="search-materials" type="text" name="search-materials" /></span></th>
-            <th>Actions <span><input class="search" id="actions" type="text" name="actions" /></span></th>
+            <th>Actions</th>
         </tr>
     {% for center in filter.qs %}
         <tr valign="top">
@@ -40,12 +40,12 @@
               <td>{{ center.contacts }}</td>
               <td>{{ center.type_of_materials_collecting }}</td>
               <td>
-                  <button class="btn"><i class="fa fa-plus"></i> Add Item</button>
-                  <button class="btn"><i class="fa fa-minus"></i> Add Item</button>
+                  <a href="/collection_centre/{{ center.id }}/item_in/">{% bootstrap_icon "plus" %}</a>
+                  <a href="/collection_centre/{{ center.id }}/item_out/">{% bootstrap_icon "minus" %}</a>
               </td>
         </tr>
     {% empty %}
-        <tr><td colspan="5">No Collection Centers added yet.</td></tr>
+        <tr><td colspan="6">No Collection Centers added yet.</td></tr>
     {% endfor %}
     </table>
 
