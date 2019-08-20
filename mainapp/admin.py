@@ -10,7 +10,7 @@ from mainapp.redis_queue import bulk_csv_upload_queue
 from mainapp.csvimporter import import_inmate_file
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, \
     RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload, RequestUpdate, \
-    Hospital
+    Hospital, Item
 
 """
 Helper function for streaming csv downloads
@@ -268,17 +268,28 @@ class RequestUpdateAdmin(admin.ModelAdmin):
 class HospitalAdmin(admin.ModelAdmin):
     list_filter = ('district',)
     list_display = ('district', 'name', 'officer', 'designation','landline','mobile','email')
-    search_fields = ['name']
+    search_fields = ['name', 'items']
  
 
 class CollectionCenterAdmin(admin.ModelAdmin):
     list_filter = ('district',)
+    list_display = ('id', 'name' , 'address' , 'contacts', 'type_of_materials_collecting' , 'district' ,
+                      'lsg_type','lsg_name','ward_name','is_inside_kerala' , 'city','added_at','map_link')
     search_fields = ['name']
     readonly_fields = ['id']
     actions = ['download_csv']
 
+    def get_items(self, obj):
+        items = Item.objects.all().filter(id==obj.id)
+        data = ""
+        if items:
+            for i in items:
+                data += i.item_name
+        return data
+
     def download_csv(self, request, queryset):
-        header_row = ('id', 'name' , 'address' , 'contacts', 'type_of_materials_collecting' , 'district' , 'lsg_type','lsg_name','ward_name','is_inside_kerala' , 'city','added_at','map_link')
+        header_row = ('id', 'name' , 'address' , 'contacts', 'type_of_materials_collecting' , 'district' ,
+                      'lsg_type','lsg_name','ward_name','is_inside_kerala' , 'city','added_at','map_link')
         body_rows = []
         collection_centers = queryset.all()
         for cc in collection_centers:
@@ -287,7 +298,12 @@ class CollectionCenterAdmin(admin.ModelAdmin):
 
         response = create_csv_response('Collection_Centers', header_row, body_rows)
         return response
- 
+
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'item_name', 'sponsored_by', 'remarks', 'unit', 'quantity', 'rate', 'center')
+    search_fields = ['item_name', 'center']
+    readonly_fields = ['id']
+
 class PrivateRescueCampAdmin(admin.ModelAdmin):
     list_filter = ('district','status')
     search_fields = ['name','location']
@@ -312,6 +328,7 @@ admin.site.register(PrivateRescueCamp,PrivateRescueCampAdmin)
 admin.site.register(DistrictCollection,DistrictCollectionAdmin)
 admin.site.register(DistrictManager,DistrictManagerAdmin)
 admin.site.register(CollectionCenter,CollectionCenterAdmin)
+admin.site.register(Item,ItemAdmin)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
 admin.site.register(Announcements, AnnouncementAdmin)

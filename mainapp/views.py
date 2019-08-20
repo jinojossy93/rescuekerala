@@ -1,13 +1,13 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, View
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
-    Announcements , districts, RequestUpdate, PrivateRescueCamp, CsvBulkUpload
+    Announcements , districts, RequestUpdate, PrivateRescueCamp, Item
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -1015,12 +1015,28 @@ class CollectionCenterListView(ListView):
     ordering = ['-id']
 
     def get_context_data(self, **kwargs):
+        print(self.kwargs)
         location = self.kwargs['location']
         inside_kerala = True if location == 'inside_kerala' else False
         context = super().get_context_data(**kwargs)
         context['inside_kerala'] = inside_kerala
         context['filter'] = CollectionCenterFilter(
             self.request.GET, queryset=CollectionCenter.objects.filter(is_inside_kerala=inside_kerala).order_by('-id')
+        )
+        return context
+
+
+class CollectionCenterItemOutView(ListView):
+    model = Item
+    paginate_by = PER_PAGE
+    ordering = ['-item_name']
+
+    def get_context_data(self, **kwargs):
+        id = self.kwargs['center_id']
+        context = super().get_context_data(**kwargs)
+        center = CollectionCenter.objects.filter(id = int(id))
+        context['filter'] = CollectionCenterFilter(
+            self.request.GET, queryset=Item.objects.filter(center=center).order_by('-item_name')
         )
         return context
 
@@ -1045,10 +1061,15 @@ class CollectionCenterForm(forms.ModelForm):
             'ward_name': forms.Select(),
         }
 
+class ItemOutForm(forms.ModelForm):
+
+    class Meta:
+        model = Item
+        fields = ['item_name', 'sponsored_by', 'unit', 'quantity']
 class ItemInForm(forms.ModelForm):
     class Meta:
-        model = CollectionCenter
-        fields = ['items']
+        model = Item
+        fields = ['item_name', 'sponsored_by', 'remarks', 'unit', 'quantity', 'rate', 'center']
 
 class CollectionCenterAddView(CreateView):
     model = CollectionCenter
@@ -1065,7 +1086,6 @@ class CollectionCenterEditView(UpdateView):
         return self.model.objects.get(id=self.kwargs.get("id"))
 
 
-
 class CollectionCenterItemInView(UpdateView):
     model = CollectionCenter
     form_class = ItemInForm
@@ -1075,14 +1095,53 @@ class CollectionCenterItemInView(UpdateView):
     def get_object(self):
         return self.model.objects.get(id=self.kwargs.get("id"))
 
-class CollectionCenterItemOutView(UpdateView):
-    model = CollectionCenter
-    form_class = CollectionCenterForm
-    template_name_suffix = '_item_out'
-    success_url = '/consent_success/'
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            item_data = form.cleaned_data
+            item_data['center'] = self.get_object()
+            Item(**item_data).save()
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return self.form_invalid(form)
 
-    def get_object(self):
-        return self.model.objects.get(id=self.kwargs.get("id"))
+# class CollectionCenterItemOutView(ListView):
+#     model = Item
+#     # form_class = ItemOutForm
+#     paginate_by = PER_PAGE
+#     ordering = ['-item_name']
+#
+#     def get_context_data(self, **kwargs):
+#         id = self.kwargs['center_id']
+#         context = super().get_context_data(**kwargs)
+#         center = CollectionCenter.objects.filter(id = int(id))
+#         context['filter'] = CollectionCenterFilter(
+#             self.request.GET, queryset=Item.objects.filter(center=center).order_by('-item_name')
+#         )
+#         return context
+    # template_name = '_out'
+    # success_url = '/consent_success/'
+    #
+    # def get_object(self):
+    #     return self.model.objects.get(id=self.kwargs.get("id"))
+    #
+    # def post(self, request, *args, **kwargs):
+    #     """
+    #     Handle POST requests: instantiate a form instance with the passed
+    #     POST variables and then check if it's valid.
+    #     """
+    #     form = self.get_form()
+    #     if form.is_valid():
+    #         item_data = form.cleaned_data
+    #         item_data['center'] = self.get_object()
+    #         Item(**item_data).save()
+    #         return HttpResponseRedirect(self.success_url)
+    #     else:
+    #         return self.form_invalid(form)
 
 
 

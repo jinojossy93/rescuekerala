@@ -604,14 +604,6 @@ class RequestUpdate(models.Model):
         return self.get_status_display()
 
 
-class Item(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Item name - ഇനത്തിന്റെ പേര്")
-    sponsored_by = models.CharField(max_length=100, blank=False, null=False, verbose_name="Sponsor - സ്പോൺസർ ചെയ്തു")
-    remarks = models.TextField(verbose_name='Remarks - പരാമർശത്തെ', blank=True)
-    unit = models.CharField(max_length=100, blank=False, null=False, verbose_name="Unit - യൂണിറ്റ്")
-    rate = models.IntegerField(null=True,blank=True,verbose_name="Item price - ഇനത്തിന്റെ വില")
-    quantity = models.IntegerField(null=True,blank=True,verbose_name="Quantity - ഇനത്തിന്റെ വില")
-
 
 class CollectionCenter(models.Model):
 
@@ -621,13 +613,8 @@ class CollectionCenter(models.Model):
         (LSGTypes.GRAMA_PANCHAYATH.value, 'Grama Panchayath')
     ]
 
-    item_types = [
-        ('----------------', ''),
-    ]
-
     name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Name - പേര്")
     address = models.TextField(verbose_name="Address - വിലാസം")
-    items = models.ForeignKey(Item, on_delete=models.CASCADE)
     contacts = models.CharField(max_length=250, null=True, blank=True, verbose_name='Contacts - മൊബൈൽ')
     type_of_materials_collecting = models.TextField(
         verbose_name="Type of materials collecting - ശേഖരിക്കുന്ന വസ്തുക്കൾ ",
@@ -659,6 +646,18 @@ class CollectionCenter(models.Model):
 
     def get_absolute_url(self):
         return reverse('collection_centers_list')
+
+class Item(models.Model):
+    item_name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Item name - ഇനത്തിന്റെ പേര്")
+    sponsored_by = models.CharField(max_length=100, blank=False, null=False, verbose_name="Sponsor - സ്പോൺസർ ചെയ്തു")
+    remarks = models.TextField(verbose_name='Remarks - പരാമർശത്തെ', blank=True)
+    unit = models.CharField(max_length=100, blank=False, null=False, verbose_name="Unit - യൂണിറ്റ്")
+    rate = models.IntegerField(null=True,blank=True,verbose_name="Item price - ഇനത്തിന്റെ വില")
+    quantity = models.IntegerField(null=True,blank=True,verbose_name="Quantity - ഇനത്തിന്റെ വില")
+    center = models.ForeignKey(CollectionCenter, null=True,blank=True, on_delete=models.CASCADE, verbose_name="Collection Center - ശേഖരണ കേന്ദ്രം")
+
+    def __str__(self):
+        return "%s" % self.item_name
 
 
 class CsvBulkUpload(models.Model):
