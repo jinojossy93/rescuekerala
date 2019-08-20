@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+
+<!--Navigation Breadcrumbs-->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="{%url 'privatedetails' %}">Private Relief & Collection Centres</a></li>
+    <li class="breadcrumb-item"><a href="{%url 'collection_centers_district_select' %}">View Collection Centers</a></li>
+  </ol>
+</nav>
+
+<div>
+    <form action="" method="get">
+        {% bootstrap_form filter.form bound_css_class=False %}
+        <input value="Search" class="btn btn-primary" type="submit" />
+    </form>
+
+    <table class="table" id="item-table">
+        <tr>
+            <th>Item ID</th>
+            <th>Item Name <span><input class="search" id="search-name" type="text" name="search-name" /></span></th>
+            <th>Rate <span><input class="search" id="search-address" type="text" name="search-address" /></span></th>
+            <th>Unit <span><input class="search" id="search-contact" type="text" name="search-contact" /></span></th>
+            <th>remarks</th>
+        </tr>
+    {% for item in filter.qs %}
+        <tr valign="top">
+              <td>{{ item.id }}</td>
+              <td>{{ item.item_name }}</td>
+              <td>{{ item.rate }}</td>
+              <td>{{ item.unit }}</td>
+              <td>{{ item.remarks }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="6">No Collection Centers added yet.</td></tr>
+    {% endfor %}
+    </table>
+
+
+{% if is_paginated %}
+    <div class="pagination" >
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="{% url 'collection_centres_item_out_view' %}?page=1">&laquo; first</a>
+                <a href="{% url 'collection_centres_item_out_view' %}?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                    <a class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
+                {% elif i > page_obj.min_page and i < page_obj.max_page or i|divisibleby:data.lim_page %}
+                    <a href="{% url 'collection_centres_item_out_view' %}?page={{ i }}">{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="{% url 'collection_centres_item_out_view' %}?page={{ page_obj.next_page_number }}">next</a>
+                <a href="{% url 'collection_centres_item_out_view' %}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+ {% endif %}
+
+
+
+</div>
+{% endblock %}
