@@ -41,7 +41,7 @@
               <td>{{ center.type_of_materials_collecting }}</td>
               <td>
                   <a href="/collection_centre/{{ center.id }}/item_in/">{% bootstrap_icon "plus" %}</a>
-                  <a href="/collection_centre/{{ center.id }}/item_out/">{% bootstrap_icon "minus" %}</a>
+                  <a href="/collection_centre/item_out/{{ center.id }}/">{% bootstrap_icon "minus" %}</a>
               </td>
         </tr>
     {% empty %}
